@@ -18,7 +18,7 @@ class Omelette extends EventEmitter
 
     @fragment = parseInt(process.argv[@compgen+1])-(if isZsh then 1 else 0)
     @word     = process.argv[@compgen+2]
-    @line     = process.argv[@compgen+3]
+    @line     = if isZsh then process.argv[@compgen+3] else process.argv[@compgen+3..]
 
     {@HOME, @SHELL} = process.env
 
@@ -106,7 +106,7 @@ class Omelette extends EventEmitter
     fileAtHome = fileAt @HOME
 
     switch @shell = @getActiveShell()
-      when 'bash' then fileAtHome '.bash_profile'
+      when 'bash' then fileAtHome '.bashrc'
       when 'zsh'  then fileAtHome '.zshrc'
 
   setupShellInitFile: (initFile=@getDefaultShellInitFile())->
@@ -122,7 +122,7 @@ class Omelette extends EventEmitter
 
     switch @shell
       when 'bash'
-        programFolder = path.join @HOME, ".#{@program}"
+        programFolder = path.join @HOME, ".config", "#{@program}"
         completionPath = path.join programFolder, 'completion.sh'
 
         fs.mkdirSync programFolder unless fs.existsSync programFolder
